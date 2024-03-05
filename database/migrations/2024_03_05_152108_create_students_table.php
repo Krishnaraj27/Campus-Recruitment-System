@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('mobile');
             $table->string('gender');
             $table->date('date_of_birth');
-            $table->string('status');
+            $table->string('status')->default('active');
             $table->string('personal_email');
             $table->decimal('cgpa');
             $table->integer('backlogs');

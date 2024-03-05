@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('website_url');
             $table->string('mobile');
-            $table->dateTime('verified_at');
+            $table->dateTime('verified_at')->nullable();
             $table->timestamps();
         });
     }
