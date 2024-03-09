@@ -23,7 +23,7 @@ class RegisterStudentRequest extends FormRequest
     {
         return [
                 'email' => 'required|regex:/^[0-9]{12}+@(?:git.org.in|gandhinagaruni.ac.in)$/|unique:users,email|max:60',
-                'password' => 'required',
+                'password' => 'required|min:5|max:20',
                 'confirm_password' => 'required|same:password',
                 'first_name' => 'required|alpha:ascii|max:50',
                 'last_name' => 'required|alpha:ascii|max:50',
@@ -50,7 +50,6 @@ class RegisterStudentRequest extends FormRequest
         return [
             'email.regex' => 'Enter valid email ID(your college/university ID)',
             'email.unique' => 'This email ID is already used. Kindly use another or do login with this email',
-            'password.regex' => 'Password pattern does not match',
             'first_name.alpha' => 'Name should contain alphabets only',
             'last_name.alpha' => 'Name should contain alphabets only',
             'enrollment.digits' => 'Enrollment should be exactly 12 digits number',
