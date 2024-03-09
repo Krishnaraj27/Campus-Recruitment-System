@@ -23,7 +23,7 @@ class RegisterStudentRequest extends FormRequest
     {
         return [
                 'email' => 'required|regex:/^[0-9]{12}+@(?:git.org.in|gandhinagaruni.ac.in)$/|unique:users,email|max:60',
-                'password' => 'required|regex:',
+                'password' => 'required',
                 'confirm_password' => 'required|same:password',
                 'first_name' => 'required|alpha:ascii|max:50',
                 'last_name' => 'required|alpha:ascii|max:50',
