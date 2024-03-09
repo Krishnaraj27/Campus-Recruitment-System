@@ -22,7 +22,7 @@ class RegisterStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'email' => 'required|regex: |unique:users,email|max:60',
+                'email' => 'required|unique:users,email|max:60',
                 'password' => 'required|regex:',
                 'confirm_password' => 'required|same:password',
                 'first_name' => 'required|alpha:ascii|max:50',
@@ -33,7 +33,7 @@ class RegisterStudentRequest extends FormRequest
                 'mobile' => 'required|digits:10|unique:students,mobile',
                 'gender' => 'required|in:male,female',
                 'date_of_birth' => 'required|date|before:today',
-                'personal_email' => 'required|regex: |unique:students,personal_email|max:60',
+                'personal_email' => 'required|regex:/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/|unique:students,personal_email|max:60',
                 'cgpa' => 'required|decimal:2',
                 'backlogs' => 'required|integer'
         ];
