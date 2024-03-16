@@ -1,9 +1,10 @@
 <title>Login</title>
 
-@extends('webViews.app')
+@extends('app')
 
 @section('content')
 
+    @include('components.navbar2')
 
     <div class="container my-4">
         <h2 class="text-center">Login</h2>
