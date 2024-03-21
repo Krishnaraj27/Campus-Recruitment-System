@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Company;
 use App\Http\Requests\RegisterStudentRequest;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -15,6 +16,9 @@ class RegisterController extends Controller
     public function registerStudentUser(RegisterStudentRequest $request){
 
         try {
+
+            DB::beginTransaction();
+
             $user = User::create([
                 'email' => $request->email,
                 'password' => $request->password,
@@ -31,16 +35,19 @@ class RegisterController extends Controller
                 'mobile' => $request->mobile,
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
-                'status' => $request->status,
+                'status' => 'active',
                 'personal_email' => $request->personal_email,
                 'cgpa' => $request->cgpa,
                 'backlogs' => $request->backlogs
             ]);
 
+            DB::commit();
+
             return redirect()->route('verify-email')->with(['success','message'],['Account created successfully.','An otp has been sent to your email ID. Enter below to verify your email']);
 
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return back()->withErrors($th->getMessage());
         }
         
@@ -49,6 +56,9 @@ class RegisterController extends Controller
     public function registerCompanyUser(Request $request){
 
         try {
+
+            DB::beginTransaction();
+
             $user = User::create([
                 'email' => $request->email,
                 'password' => $request->password,
@@ -64,9 +74,12 @@ class RegisterController extends Controller
                 'mobile' => $request->mobile,
             ]);
 
+            DB::commit();
+
             return redirect()->route('verify-email')->with(['success','message'],['Account created successfully.','An otp has been sent to your email ID. Enter below to verify your email']);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return back()->withErrors($th->getMessage());
         }
         
