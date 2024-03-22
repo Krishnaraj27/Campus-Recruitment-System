@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         try {
             
-            if(Auth::attempt($request)){
+            if(Auth::attempt($credentials)){
             
                 $user = Auth()->user();
     
@@ -36,11 +36,11 @@ class AuthController extends Controller
                 }
             }
             else{
-                return back()->with('error','Incorrect Credentials');
+                return back()->withErrors(['error'=>'Incorrect Credentials']);
             }
 
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->withErrors(['error'=>$th->getMessage()]);
         }
 
        
