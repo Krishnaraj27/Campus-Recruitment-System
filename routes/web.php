@@ -20,17 +20,26 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::controller(Controller::class)->group(function(){
-    Route::get('login','loginPage')->name('login');
-    Route::get('register','registerStudentPage')->name('register-student');
-    Route::get('company/register','registerCompanyPage')->name('register-company');
-});
 
-Route::controller(AuthController::class)->group(function(){
-    Route::post('login','login')->name('doLogin');
-});
+# Common login for all
 
-Route::controller(RegisterController::class)->group(function(){
-    Route::post('register-student','registerStudentUser')->name('doStudentRegister');
-    Route::post('register-company','registerCompanyUser')->name('doCompanyRegister');
-});
+Route::get('login',[Controller::class,'loginPage'])->name('login');
+Route::post('login',[AuthController::class,'login'])->name('doLogin');
+
+
+#Student routes
+
+Route::get('register',[Controller::class,'registerStudentPage'])->name('register-student');
+Route::post('register-student',[RegisterController::class,'registerStudentUser'])->name('doStudentRegister');
+
+
+#Company routes
+
+Route::get('company/register',[Controller::class,'registerCompanyPage'])->name('register-company');
+Route::post('register-company',[RegisterController::class,'registerCompanyUser'])->name('doCompanyRegister');
+
+
+#Verification link routes
+
+Route::get('verify-email/{token}',[AuthController::class,'doVerifyEmail']);
+Route::post('send-verification-link',[AuthController::class,'sendVerificationLink'])->name('sendVerificationLink');
