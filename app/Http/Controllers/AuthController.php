@@ -84,6 +84,14 @@ class AuthController extends Controller
                 DB::beginTransaction();
                 $user->email_verified_at = now();
                 $user->save();
+
+                if($user->type == 'student'){
+                    $user->assignRole('student');
+                }
+                elseif($user->type == 'company'){
+                    $user->assignRole('company');
+                }
+
                 DB::commit();
 
                 return redirect()->route('login')->with('success','Email verified successfully. Please login again');
