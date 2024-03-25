@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Company;
 use App\Http\Requests\RegisterStudentRequest;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\SendVerificationMail;
 
 class RegisterController extends Controller
 {
@@ -21,7 +22,7 @@ class RegisterController extends Controller
 
             $user = User::create([
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => bcrypt($request->password),
                 'type' => 'student'
             ]);
 
@@ -43,8 +44,13 @@ class RegisterController extends Controller
 
             DB::commit();
 
-            return redirect()->route('verify-email')->with(['success','message'],['Account created successfully.','An otp has been sent to your email ID. Enter below to verify your email']);
+            # the base64 encoded string of the user's email is sent as token to identify user from link.
 
+            $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
+
+            dispatch(new SendVerificationMail(['url'=>$url,'name'=> $student->first_name . ' ' . $student->last_name]));
+
+            return redirect()->route('verify-email')->with(['success','message','userId'],['Account created successfully.','A verification link has been sent to your primary email ID. Click that url to verify your email ID',$user->id]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -65,7 +71,7 @@ class RegisterController extends Controller
                 'type' => 'company'
             ]);
 
-            $student = Company::create([
+            $company = Company::create([
                 'user_id' => $user->id,
                 'name' => $request->name,
                 'description' => $request->description,
@@ -76,7 +82,13 @@ class RegisterController extends Controller
 
             DB::commit();
 
-            return redirect()->route('verify-email')->with(['success','message'],['Account created successfully.','An otp has been sent to your email ID. Enter below to verify your email']);
+            # the base64 encoded string of the user's email is sent as token to identify user from link.
+
+            $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
+            
+            dispatch(new SendVerificationMail(['url'=>$url,'name'=> $company->name]));
+
+            return redirect()->route('verify-email')->with(['success','message','userId'],['Account created successfully.','A verification link has been sent to your primary email ID. Click that url to verify your email ID',$user->id]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
