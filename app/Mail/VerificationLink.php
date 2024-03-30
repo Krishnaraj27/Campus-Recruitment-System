@@ -39,7 +39,7 @@ class VerificationLink extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.verification_link',
+            view: 'mails.verification_link',
             with: [
                 'url'=> $this->data['url'],
                 'name' => $this->data['name']
