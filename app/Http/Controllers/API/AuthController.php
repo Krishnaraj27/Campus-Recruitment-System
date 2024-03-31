@@ -51,12 +51,18 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request){
+
+        try {
+            Auth::logout();
+
+            $request->session()->invalidate();
+    
+            return response(['success'=>true,'message'=>'Logged out successfully','redirect'=>'login']);
+    
+        } catch (\Throwable $th) {
+            return response(['success'=>false,'message'=>'Something went wrong','error'=>$th->getMessage()]);
+        }
         
-        Auth::logout();
-
-        $request->session()->invalidate();
-
-        return response(['success'=>true,'message'=>'Logged out successfully','redirect'=>'login']);
-
+        
     }
 }
