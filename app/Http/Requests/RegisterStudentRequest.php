@@ -22,20 +22,20 @@ class RegisterStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'email' => 'required|regex:/^[0-9]{12}+@(?:git.org.in|gandhinagaruni.ac.in)$/|unique:users,email|max:60',
+                'email' => ['required','regex:/^[0-9]{12}+@(?:git.org.in|gandhinagaruni.ac.in)$/','unique:users,email','max:60'],
                 'password' => 'required|min:5|max:20',
                 'confirm_password' => 'required|same:password',
                 'first_name' => 'required|alpha:ascii|max:50',
                 'last_name' => 'required|alpha:ascii|max:50',
-                'enrollment' => 'required|digits:12',
+                'enrollment' => 'required|digits:12|unique:students,enrollment',
                 'course' => 'required',
-                'semester' => 'required|digits:1',
+                'semester' => 'required|max:8|digits:1',
                 'mobile' => 'required|digits:10|unique:students,mobile',
                 'gender' => 'required|in:male,female',
                 'date_of_birth' => 'required|date|before:today',
+                'cgpa' => 'required|decimal:0,2|max:10',
+                'backlogs' => 'required|integer',
                 'personal_email' => 'required|regex:/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/|unique:students,personal_email|max:60',
-                'cgpa' => 'required|decimal:2',
-                'backlogs' => 'required|integer'
         ];
     }
 
@@ -53,6 +53,7 @@ class RegisterStudentRequest extends FormRequest
             'first_name.alpha' => 'Name should contain alphabets only',
             'last_name.alpha' => 'Name should contain alphabets only',
             'enrollment.digits' => 'Enrollment should be exactly 12 digits number',
+            'enrollment.unique' => 'This enrollment has already been registered. If this is your\'s, kindly contact admin',
             'mobile.digits' => 'Mobile number should be exactly 10 digits only',
             'date_of_birth.before' => 'Date of birth could not be after today',
             'personal_email.regex' => 'Enter valid personal email ID',
