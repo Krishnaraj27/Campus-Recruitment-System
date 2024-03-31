@@ -29,7 +29,7 @@ class RegisterStudentRequest extends FormRequest
                 'last_name' => 'required|alpha:ascii|max:50',
                 'enrollment' => 'required|digits:12|unique:students,enrollment',
                 'course' => 'required',
-                'semester' => 'required|max:8|digits:1',
+                'semester' => 'required|integer|max:8|min:1',
                 'mobile' => 'required|digits:10|unique:students,mobile',
                 'gender' => 'required|in:male,female',
                 'date_of_birth' => 'required|date|before:today',
