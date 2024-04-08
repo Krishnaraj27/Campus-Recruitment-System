@@ -14,111 +14,110 @@ use App\Jobs\SendVerificationMail;
 class AuthController extends Controller
 {
 
-    public function login(Request $request){
+    public function loginPage()
+    {        
+        $title = 'Login';
+        return view('login',compact('title'));    
+    }
 
-        $credentials = $request->validate([
-            'email'=>'required',
-            'password'=> 'required'
-        ]);
+
+    public function login(Request $request)
+    {
 
         try {
-            
-            if(Auth::validate($credentials)){
-            
-                $user = User::where('email',$request->email)->first();
+            $credentials = $request->validate([
+                'email' => 'required',
+                'password' => 'required'
+            ]);
 
-                if($user->email_verified_at==null){
-        
-                    return redirect()->route('verify-email')->with(['message','userId'],['Your email ID is not verified. Please verify it by clicking the verification link sent to your registered email ID.',$user->id]); 
+            if (Auth::attempt($credentials)) {
 
+                $user = Auth::user();
+                // Auth::login($user);
+
+                if ($user->type == 'student') {
+                    return redirect()->route('student-dashboard')->with('success', 'Logged in succesfully');
+                } elseif ($user->type == 'company') {
+                    return redirect()->route('company-dashboard')->with('success', 'Logged in succesfully');
+                } elseif ($user->type == 'admin') {
+                    return redirect()->route('admin-dashboard')->with('success', 'Logged in succesfully');
                 }
-                else{
 
-                    Auth::login($user);
-
-                    if($user->type=='student'){
-                        return redirect()->route('dashboard');
-                    }
-                    elseif($user->type=='company'){
-                        return redirect()->route('company-dashboard');
-                    }
-                    elseif($user->type=='admin'){
-                        return redirect()->route('admin-dashboard');
-                    }
-                }
+                return redirect()->back()->with('error', 'Invalid request');
+            } else {
+                return redirect()->back()->with('error', 'Incorrect Credentials');
             }
-            else{
-                return back()->withErrors(['error'=>'Incorrect Credentials']);
-            }
-
         } catch (\Throwable $th) {
-            return back()->withErrors(['error'=>$th->getMessage()]);
+            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
         }
-
-       
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
+        try {
+            Auth::logout();
+
+            $request->session()->invalidate();
+
+            return redirect()->route('login')->with('success', 'Logged out succesfully');
         
-        Auth::logout();
-
-        $request->session()->invalidate();
-
-        return redirect()->route('login');
-
+        } catch (\Throwable $th) {
+            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+        }       
     }
 
-    public function doVerifyEmail(Request $request){
-        $email = base64_decode($request->token);
+    public function doVerifyEmail(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $email = base64_decode($request->token);
 
-        $user = User::where('email',$email)->get();
+            $user = User::where('email', $email)->with('student')->first();
 
-        if(!$user){
-            return redirect()->route('login')->with('error','Invalid Request');
-        }
-        elseif($user->email_verified_at != null){
-            return redirect()->route('home');
-        }
-        else{
-            try {
-                DB::beginTransaction();
+            if (!$user) {
+                DB::rollBack();
+                return redirect()->route('student-dashboard')->with('error', 'Invalid Request');
+            } elseif ($user->email_verified_at != null) {
+                DB::rollBack();
+                return redirect()->route('student-dashboard')->with('error', 'You have already verified');
+            } else {
+                
                 $user->email_verified_at = now();
+                $user->student->status = 'active';                
+                $user->assignRole('student');
+                $user->student->save();
                 $user->save();
-
-                if($user->type == 'student'){
-                    $user->assignRole('student');
-                }
-                elseif($user->type == 'company'){
-                    $user->assignRole('company');
-                }
 
                 DB::commit();
 
-                return redirect()->route('login')->with('success','Email verified successfully. Please login again');
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return redirect()->route('login')->with('error','Something went wrong. Try again');
+                return redirect()->route('student-dashboard')->with('success', 'Email verified successfully. Please login again');
             }
-            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('student-dashboard')->with('error','Something went wrong')->with('error_message', $th->getMessage());
         }
     }
 
-    public function sendVerificationLink(Request $request){
-        
-        $user = User::find($request->id);
-        $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
-        if($user->type == 'student'){
-            $student  = Student::where('user_id',$user->id)->get();
+    public function sendVerificationLink(Request $request)
+    {
+        try {
+            
+            $user = Auth::user();
+           
+            $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
+ 
+            $student  = Student::where('user_id', $user->id)->get();
+            
             $name = $student->first_name . ' ' . $student->last_name;
+   
+            dispatch(new SendVerificationMail(['url' => $url, 'name' => $name]));
+    
+            return redirect()->back()->with('success', 'A verification link has been sent to your registered email address');
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
         }
-        elseif($user->type == 'company'){
-            $company = Company::where('user_id',$user->id)->get();
-            $name = $company->name;
-        }
-
-        dispatch(new SendVerificationMail(['url'=>$url,'name'=>$name]));
-
-        return redirect()->route('verify-email')->with(['message','userId'],['A verification link has been sent to your registered email address',$user->id]); 
-
+        
     }
 }

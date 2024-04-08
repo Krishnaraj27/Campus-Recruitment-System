@@ -45,16 +45,16 @@ class RegisterController extends Controller
             DB::commit();
 
             # the base64 encoded string of the user's email is sent as token to identify user from link.
-
+            
             $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
 
-            dispatch(new SendVerificationMail(['url'=>$url,'name'=> $student->first_name . ' ' . $student->last_name]));
+            dispatch(new SendVerificationMail(['url'=>$url,'name'=> $student->first_name . ' ' . $student->last_name,'email'=>$user->email]));
 
-            return redirect()->route('verify-email')->with(['success','message','userId'],['Account created successfully.','A verification link has been sent to your primary email ID. Click that url to verify your email ID',$user->id]);
+            return redirect()->route('login')->with('success','Account created successfully.');
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->withErrors($th->getMessage());
+            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
         }
         
     }
@@ -82,17 +82,11 @@ class RegisterController extends Controller
 
             DB::commit();
 
-            # the base64 encoded string of the user's email is sent as token to identify user from link.
-
-            $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
-            
-            dispatch(new SendVerificationMail(['url'=>$url,'name'=> $company->name]));
-
-            return redirect()->route('verify-email')->with(['success','message','userId'],['Account created successfully.','A verification link has been sent to your primary email ID. Click that url to verify your email ID',$user->id]);
+            return redirect()->route('login')->with('success','Account created successfully.');
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->withErrors($th->getMessage());
+            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
         }
         
     }

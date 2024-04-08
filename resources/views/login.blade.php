@@ -1,5 +1,3 @@
-<title>Login</title>
-
 @extends('app')
 
 @section('content')
@@ -43,36 +41,28 @@
 
     </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<script>
+@endsection
 
 
-</script>
-<script type="text/javascript">
-        if ( window.history.replaceState ) {
-      window.history.replaceState( null, null, window.location.href );
-    
-            toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "1000",
-            "hideDuration": "1000",
-            "timeOut": "4000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
-    }
-    
-</script>    
+@section('js')
+
+    @if (session('message'))   
+        <script>
+            toastr.info("{{session('message')}}")
+        </script>
+    @endif
+
+    @if (session('success'))   
+        <script>
+            toastr.success("{{session('message')}}")
+        </script>
+    @endif
+
+    @if (session('error'))   
+        <script>
+            toastr.error("{{session('error')}}")
+            console.log("{{session('error_message')}}");
+        </script>
+    @endif
+
 @endsection
