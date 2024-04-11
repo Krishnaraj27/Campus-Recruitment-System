@@ -25,6 +25,7 @@ use App\Http\Controllers\StudentController;
 
 Route::get('login',[AuthController::class,'loginPage'])->name('login')->middleware('guest');
 Route::post('login',[AuthController::class,'login'])->name('doLogin')->middleware('guest');
+Route::post('logout',[AuthController::class,'logout'])->name('doLogout')->middleware('auth');
 
 
 #Student routes

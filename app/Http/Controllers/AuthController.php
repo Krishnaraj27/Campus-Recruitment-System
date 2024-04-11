@@ -36,11 +36,11 @@ class AuthController extends Controller
                 // Auth::login($user);
 
                 if ($user->type == 'student') {
-                    return redirect()->route('student-dashboard')->with('success', 'Logged in succesfully');
+                    return redirect()->route('dashboard')->with('success', 'Logged in succesfully');
                 } elseif ($user->type == 'company') {
-                    return redirect()->route('company-dashboard')->with('success', 'Logged in succesfully');
+                    return redirect()->route('companyDashboard')->with('success', 'Logged in succesfully');
                 } elseif ($user->type == 'admin') {
-                    return redirect()->route('admin-dashboard')->with('success', 'Logged in succesfully');
+                    return redirect()->route('adminDashboard')->with('success', 'Logged in succesfully');
                 }
 
                 return redirect()->back()->with('error', 'Invalid request');
@@ -48,7 +48,7 @@ class AuthController extends Controller
                 return redirect()->back()->with('error', 'Incorrect Credentials');
             }
         } catch (\Throwable $th) {
-            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+            return redirect()->back()->with('error','Something went wrong')->with('error_message',$th->getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ class AuthController extends Controller
             return redirect()->route('login')->with('success', 'Logged out succesfully');
         
         } catch (\Throwable $th) {
-            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+            return redirect()->back()->with('error','Something went wrong')->with('error_message',$th->getMessage());
         }       
     }
 
@@ -116,7 +116,7 @@ class AuthController extends Controller
             return redirect()->back()->with('success', 'A verification link has been sent to your registered email address');
 
         } catch (\Throwable $th) {
-            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+            return redirect()->back()->with('error','Something went wrong')->with('error_message',$th->getMessage());
         }
         
     }

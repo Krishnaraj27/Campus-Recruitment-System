@@ -22,8 +22,9 @@ class StudentController extends Controller
             return redirect()->route('adminDashboard');
         }
         else{
+            $title = 'Dashboard';
             $userStudent = $user->student;
-            return view('index',['user'=>$user,'student'=>$userStudent]);
+            return view('student.index',['user'=>$user,'student'=>$userStudent],compact('title'));
         }
 
     }

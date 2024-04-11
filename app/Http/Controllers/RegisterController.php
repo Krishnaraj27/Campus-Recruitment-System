@@ -54,7 +54,7 @@ class RegisterController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+            return redirect()->back()->with('error','Something went wrong')->with('error_message',$th->getMessage());
         }
         
     }
@@ -86,7 +86,7 @@ class RegisterController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with(['error', 'error_message'], ['Something went wrong', $th->getMessage()]);
+            return redirect()->back()->with('error','Something went wrong')->with('error_message',$th->getMessage());
         }
         
     }
