@@ -18,7 +18,8 @@ class DriveApplication extends Model
         'drive_id',
         'student_id',
         'student_resume',
-        'status'
+        'status',
+        'feedback'
     ];
 
     public function drive():BelongsTo{

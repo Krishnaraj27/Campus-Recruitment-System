@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('student_id')->references('id')->on('students')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('student_resume');
             $table->string('status')->default('applied');
+            $table->string('feedback')->nullable()->default(null);
             $table->timestamps();
         });
     }
