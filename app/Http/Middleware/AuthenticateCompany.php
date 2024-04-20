@@ -18,13 +18,13 @@ class AuthenticateCompany
     {
         $user = Auth::user();
         if(!$user){
-            redirect()->route('login');
+            return redirect()->route('login');
         }
         elseif($user->type=='student'){
-            redirect()->route('dashboard');
+            return redirect()->route('dashboard');
         }
         elseif($user->type=='admin'){
-            redirect()->route('adminDashboard');
+            return redirect()->route('adminDashboard');
         }
 
         return $next($request);
