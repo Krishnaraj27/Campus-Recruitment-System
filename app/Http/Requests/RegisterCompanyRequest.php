@@ -25,7 +25,7 @@ class RegisterCompanyRequest extends FormRequest
             'email'=>'required|unique:users,email|max:60',
             'password'=>'required|min:5|max:20',
             'name'=>'required|max:70',
-            'description'=>'required',
+            'description'=>'required|max:500',
             'address'=>'required|max:250',
             'website_url'=>'required|max:250',
             'mobile'=>'required|digits:10|unique:companies,mobile',
@@ -42,7 +42,9 @@ class RegisterCompanyRequest extends FormRequest
         return [
             'email.unique' => 'This email ID is already used. Kindly use another or do login with this email',
             'mobile.digits' => 'Mobile number should be exactly 10 digits only',
-            'mobile.unique'=>'This mobile number is already used. Kindly use another one'
+            'mobile.unique'=>'This mobile number is already used. Kindly use another one',
+            'password.min' => 'Password length must be minimum 5 characters',
+            'password.max' => 'Password length cannot be greater than 5 characters'
 
         ];
     }

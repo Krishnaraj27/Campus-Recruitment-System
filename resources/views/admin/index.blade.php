@@ -26,7 +26,7 @@
                                     <tr>
                                         <td> {{$company->name}} </td>
                                         <td> {{$company->created_at}} </td>
-                                        <td><a href="{{route('adminViewCopmany',['id'=>base64_encode($company->id)])}}" class='btn btn-primary'>View</a></td>
+                                        <td><a href="{{route('adminViewCompany',['id'=>base64_encode($company->id)])}}" class='btn btn-primary'>View</a></td>
                                     </tr>
                                 @endforeach                           
                             </tbody>

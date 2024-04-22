@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class SendNewCompanyNotificationToAdmin implements ShouldQueue
 {
@@ -32,7 +33,9 @@ class SendNewCompanyNotificationToAdmin implements ShouldQueue
     {  
         $admins = User::where('type','admin')->get();
 
-        $admins->each(function($admin){
+        Log::info($admins);
+        $admins->map(function($admin){
+            // dd($admin->email);
             Mail::to($admin->email)->send(new NewCompanyNotificationToAdmin([
                 'companyName'=>$this->companyName
             ]));

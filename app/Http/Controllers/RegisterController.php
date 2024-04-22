@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterCompanyRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Company;
 use App\Http\Requests\RegisterStudentRequest;
+use App\Jobs\SendNewCompanyNotificationToAdmin;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\SendVerificationMail;
+use App\Jobs\SendWelcomeNotificationToCompany;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -59,7 +63,7 @@ class RegisterController extends Controller
         
     }
 
-    public function registerCompanyUser(Request $request){
+    public function registerCompanyUser(RegisterCompanyRequest $request){
 
         try {
 
@@ -82,6 +86,10 @@ class RegisterController extends Controller
 
             DB::commit();
 
+            dispatch(new SendWelcomeNotificationToCompany($company->name,$user->email));
+            Log::info($company->name);
+            dispatch(new SendNewCompanyNotificationToAdmin($company->name));
+            
             return redirect()->route('login')->with('success','Account created successfully.');
 
         } catch (\Throwable $th) {

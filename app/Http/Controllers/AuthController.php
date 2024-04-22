@@ -52,6 +52,7 @@ class AuthController extends Controller
         }
     }
 
+
     public function logout(Request $request)
     {
         try {
@@ -66,6 +67,7 @@ class AuthController extends Controller
         }       
     }
 
+    
     public function doVerifyEmail(Request $request)
     {
         try {
@@ -75,12 +77,14 @@ class AuthController extends Controller
 
             $user = User::where('email', $email)->with('student')->first();
 
+            $redirectRoute = Auth::check() ? 'dashboard' : 'login';
+
             if (!$user) {
                 DB::rollBack();
-                return redirect()->route('student-dashboard')->with('error', 'Invalid Request');
+                return redirect()->route($redirectRoute)->with('error', 'Invalid Request');
             } elseif ($user->email_verified_at != null) {
                 DB::rollBack();
-                return redirect()->route('student-dashboard')->with('error', 'You have already verified');
+                return redirect()->route($redirectRoute)->with('error', 'You have already verified');
             } else {
                 
                 $user->email_verified_at = now();
@@ -91,13 +95,15 @@ class AuthController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('student-dashboard')->with('success', 'Email verified successfully. Please login again');
+                return redirect()->route($redirectRoute)->with('success', 'Email verified successfully. Please login again');
+
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('student-dashboard')->with('error','Something went wrong')->with('error_message', $th->getMessage());
+            return redirect()->route('dashboard')->with('error','Something went wrong')->with('error_message', $th->getMessage());
         }
     }
+
 
     public function sendVerificationLink(Request $request)
     {
@@ -105,7 +111,7 @@ class AuthController extends Controller
             
             $user = Auth::user();
            
-            $url = 'http://127.0.0.1:8000/verify-email/' . base64_encode($user->email);
+            $url = env('APP_URL','http://localhost/workspace/Campus-Recruitment-System/public').'/verify-email/' . base64_encode($user->email);
  
             $student  = Student::where('user_id', $user->id)->get();
             
