@@ -2,7 +2,7 @@
 
 @section('content')
 
-    @include('components.navbar2')
+    @include('admin.components.navbar')
 
     <div class="container my-4">
         <h2 class="text-center">Welcome Admin</h2>
@@ -38,11 +38,7 @@
                     @endif
                 </div>
             </div>
-
-            <form action="{{route('doLogout')}}" method="post">
-                @csrf
-                <button type="submit" class="btn btn-dark">Logout</button>
-            </form>
+            
     </div>
 
 @endsection

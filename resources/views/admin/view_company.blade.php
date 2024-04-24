@@ -2,7 +2,7 @@
 
 @section('content')
 
-    @include('components.navbar2')
+    @include('admin.components.navbar')
 
     <div class="container my-4">
         <h2 class="text-center">View Company</h2>
@@ -34,23 +34,19 @@
                 <div class="card-footer">
                     <div class="my-2">
                         @if ($company->status=='pending')
-                            <a class="mx-2 btn btn-success" onclick="confirm('Are you sure?')" href="">Verify</a>
-                            <a class="mx-2 btn btn-danger" onclick="confirm('This will delete the company\'s account also. Are you sure?')" href="">Reject</a>                    
+                            <a class="mx-2 btn btn-success" onclick="confirm('Are you sure?')" href="{{route('doVerifyCompany',['id'=>base64_encode($company->id)])}}">Verify</a>
+                            <a class="mx-2 btn btn-danger" onclick="confirm('This will delete the company\'s account also. Are you sure?')" href="{{route('doRejectCompany',['id'=>base64_encode($company->id)])}}">Reject</a>                    
                         @endif
-                        @if ($company->status=='active')
+                        {{-- @if ($company->status=='active')
                             <a class="btn btn-danger" onclick="confirm('Are you sure?')" href="">Block</a>
                         @endif
                         @if ($company->status=='inactive')
                             <a class="btn btn-success" onclick="confirm('Are you sure?')" href="">Unblock</a>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </div>
 
-            <form action="{{route('doLogout')}}" method="post">
-                @csrf
-                <button type="submit" class="btn btn-dark">Logout</button>
-            </form>
     </div>
 
 @endsection
@@ -65,7 +61,7 @@
 
     @if (session('success'))   
     <script>
-        toastr.success("{{session('message')}}")
+        toastr.success("{{session('success')}}")
     </script>
     @endif
 

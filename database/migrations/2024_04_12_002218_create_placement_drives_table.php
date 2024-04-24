@@ -17,12 +17,11 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->dateTime('date');
-            $table->string('attachment')->nullable();
             $table->dateTime('application_deadline');
             $table->string('mode');
             $table->float('min_cgpa',4,2,true)->nullable();
             $table->integer('max_backlogs',false,true)->nullable();
-            $table->string('status')->default('upcoming');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

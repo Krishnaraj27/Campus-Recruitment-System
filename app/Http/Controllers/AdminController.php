@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\SendVerificationMailToCompany;
+use App\Models\PlacementDrive;
 
 class AdminController extends Controller
 {
@@ -15,10 +16,10 @@ class AdminController extends Controller
         
         $user = Auth::user();
         $unverifiedCompanies = Company::where('status','pending')->get();
-        $activeCompanies = Company::where('status','active')->get();
-        $inactiveCompanies = Company::where('status','inactive')->get();
-        
-        return view('admin.index',['user'=>$user,'unverifiedCompanies'=>$unverifiedCompanies,'title'=>'Admin Dashboard']);
+        $upcomingDrives = PlacementDrive::where('status','active')->get();
+        $upcomingDrives = $upcomingDrives->sortBy('created_at');
+
+        return view('admin.index',['user'=>$user,'unverifiedCompanies'=>$unverifiedCompanies,'upcomingDrives'=>$upcomingDrives,'title'=>'Admin Dashboard']);
 
     }
 
@@ -26,7 +27,7 @@ class AdminController extends Controller
     public function viewCompanyPage(Request $request){
         try {
             $id = base64_decode($request->id);
-            $company = Company::find($id)->with('user')->first();
+            $company = Company::with('user')->find($id);
 
             return view('admin.view_company',['company'=>$company,'title'=>'View Company']);
         } catch (\Throwable $th) {
@@ -39,10 +40,12 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
             $id = base64_decode($request->id);
-            $company = Company::find($id)->with('user')->first();
+            $company = Company::with('user')->find($id);
 
             if($company->status=='pending'){
                 $company->status = 'active';
+                $company->verified_at = now();
+                $company->user->assignRole('company');
                 $company->save();
                 DB::commit();
                 dispatch(new SendVerificationMailToCompany($company->name,$company->user->email));
@@ -64,7 +67,7 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
             $id = base64_decode($request->id);
-            $company = Company::find($id)->with('user')->first();
+            $company = Company::with('user')->find($id);
 
             if($company->status=='pending'){
                 $email = $company->user->email;
